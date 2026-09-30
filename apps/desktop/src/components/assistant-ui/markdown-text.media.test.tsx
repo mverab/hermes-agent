@@ -72,6 +72,24 @@ describe('MarkdownImage media routing', () => {
     expect(container.querySelector('img')).toBeNull()
   })
 
+  // Remote media streams through the main process on the same per-host socket
+  // pool as REST and WS-ticket minting. A preloading element holds a paused
+  // connection for as long as it is mounted; six of them starve the pool and
+  // the app can no longer reach the gateway. Nothing streams until play.
+  it('does not preload transcript video or audio', async () => {
+    const { container } = render(
+      <>
+        <MarkdownImage alt="clip" src="file:///tmp/clip.mp4" />
+        <MarkdownImage alt="note" src="file:///tmp/note.mp3" />
+      </>
+    )
+
+    await waitFor(() => expect(container.querySelector('video')).not.toBeNull())
+    await waitFor(() => expect(container.querySelector('audio')).not.toBeNull())
+    expect(container.querySelector('video')?.getAttribute('preload')).toBe('none')
+    expect(container.querySelector('audio')?.getAttribute('preload')).toBe('none')
+  })
+
   it('still renders an <img> for an image source', () => {
     const { container } = render(<MarkdownImage alt="pic" src="file:///tmp/pic.png" />)
 

@@ -215,7 +215,7 @@ function MediaPlaybackAttachment({ path }: { path: string }) {
     return (
       <span className="my-3 block max-w-md rounded-xl border border-(--ui-stroke-tertiary) bg-muted/35 p-3">
         <span className="mb-2 block truncate text-xs font-medium text-muted-foreground">{name}</span>
-        <audio className="block w-full" controls onError={() => setFailed(true)} preload="metadata" src={src} />
+        <audio className="block w-full" controls onError={() => setFailed(true)} preload="none" src={src} />
         {failed && <OpenMediaButton kind="audio" path={path} />}
       </span>
     )
@@ -225,10 +225,13 @@ function MediaPlaybackAttachment({ path }: { path: string }) {
     return (
       <span className="my-3 block max-w-2xl rounded-xl border border-(--ui-stroke-tertiary) bg-muted/35 p-3">
         <span className="mb-2 block truncate text-xs font-medium text-muted-foreground">{name}</span>
+        {/* preload="none": a preloading element holds a paused remote stream on
+            the gateway's per-host socket pool until unmounted (see test). */}
         <TranscriptVideo
           className="block max-h-112 w-full rounded-lg bg-black"
           controls
           onError={() => setFailed(true)}
+          preload="none"
           src={src}
         />
         {failed && <OpenMediaButton kind="video" path={path} />}
